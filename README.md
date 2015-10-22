@@ -1,4 +1,4 @@
 # Elliptical Utils
 
-Elliptical Utilities Module
+es6 javascript utilities lib
 
