@@ -1,54 +1,33 @@
 var gulp=require('gulp'),
-    gulputil=require('gulp-util'),
-    path=require('path'),
-    fs = require('fs-extra'),
     concat=require('gulp-concat'),
     uglify = require('gulp-uglify'),
-    merge = require('merge-stream'),
-    build=require('./build.json'),
-    release=require('./build/dist.json'),
-    src='./src',
-    dist='./dist';
-
-
+    BUILD_JSON=require('./build/dist.json'),
+    BUILD_NAME='elliptical.utils.js',
+    MIN_NAME='elliptical.utils.min.js',
+    REPO_NAME='elliptical utils',
+    DIST='./dist';
 
 
 gulp.task('default',function(){
-    console.log('elliptical utils build..."tasks: gulp build|gulp minify"');
+    console.log(REPO_NAME + ' ..."tasks: gulp build|gulp minify"');
 });
 
 gulp.task('build',function(){
-
-    var build_=srcStream()
-        .pipe(concat('elliptical-utils.js'))
-        .pipe(gulp.dest(src));
-
-    var release_=releaseStream()
-        .pipe(concat('elliptical-utils.js'))
-        .pipe(gulp.dest(dist));
-
-    return merge(build_, release_);
-
+       concatStream(BUILD_NAME)
+           .pipe(gulp.dest(DIST));
 });
 
 gulp.task('minify',function(){
-
-    var build_=srcStream()
-        .pipe(concat('elliptical-utils.js'))
-        .pipe(gulp.dest(src));
-
-    var minify_=releaseStream()
-        .pipe(concat('elliptical-utils.min.js'))
+       concatStream(MIN_NAME)
         .pipe(uglify())
-        .pipe(gulp.dest(dist));
-
-    return merge(build_, minify_);
+        .pipe(gulp.dest(DIST));
 });
 
 function srcStream(){
-    return gulp.src(build);
+    return gulp.src(BUILD_JSON);
 }
 
-function releaseStream(){
-    return gulp.src(release);
+function concatStream(name){
+    return srcStream()
+        .pipe(concat(name))
 }

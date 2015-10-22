@@ -1,4 +1,18 @@
 [
 
-    "./src/elliptical-utils.js"
+  "./node_modules/regenerator/runtime.js",
+  "./node_modules/js-object-clone/object-clone.js",
+  "./node_modules/object-mixin/build/object-mixin.js",
+  "./compiled/generator.js",
+  "./compiled/extensions.js",
+  "./compiled/random.js",
+  "./compiled/string.js",
+  "./compiled/date",
+  "./compiled/network",
+  "./compiled/color",
+  "./compiled/url",
+  "./compiled/currency",
+  "./compiled/array.js",
+  "./compiled/path.js",
+  "./compiled/object.js"
 ]
