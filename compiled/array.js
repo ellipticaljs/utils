@@ -92,6 +92,24 @@
         }
     };
 
+    array.indexById = function (arr, id) {
+        var idProp = arguments[2] === undefined ? 'id' : arguments[2];
+
+        if (arr.length && arr.length > 0) {
+            var len = arr.length;
+            var index = undefined;
+            for (var i = 0; i < len; i++) {
+                if (arr[i][idProp] === id) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        } else {
+            return null;
+        }
+    };
+
     /**
      * finds an object in an array by id
      * @param arr {Array}

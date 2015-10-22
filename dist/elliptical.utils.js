@@ -1467,6 +1467,24 @@
         }
     };
 
+    array.indexById = function (arr, id) {
+        var idProp = arguments[2] === undefined ? 'id' : arguments[2];
+
+        if (arr.length && arr.length > 0) {
+            var len = arr.length;
+            var index = undefined;
+            for (var i = 0; i < len; i++) {
+                if (arr[i][idProp] === id) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        } else {
+            return null;
+        }
+    };
+
     /**
      * finds an object in an array by id
      * @param arr {Array}
@@ -1484,6 +1502,7 @@
 
     module.exports = array;
 });
+
 (function (global, factory) {
     if (typeof define === 'function' && define.amd) {
         define(['exports', 'module', './array'], factory);
@@ -1877,7 +1896,21 @@
             }
             return index;
         } else {
-            return undefined;
+            return null;
         }
+    };
+
+    object.isEmpty = function (obj) {
+        var hasOwnProperty = Object.prototype.hasOwnProperty;
+        if (obj == null) return true;
+
+        if (obj.length > 0) return false;
+        if (obj.length === 0) return true;
+
+        for (var key in obj) {
+            if (hasOwnProperty.call(obj, key)) return false;
+        }
+
+        return true;
     };
 });
