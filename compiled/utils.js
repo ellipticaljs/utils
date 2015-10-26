@@ -1,20 +1,20 @@
 (function (global, factory) {
   if (typeof define === 'function' && define.amd) {
-    define(['exports', 'module', './extensions', 'js-object-clone', 'object-mixin', './generator', './random', './string', './date', './network', './color', './url', './currency', './array', './path', './object'], factory);
+    define(['exports', 'module', './assign', './extensions', 'js-object-clone', 'object-mixin', './generator', './random', './string', './date', './network', './color', './url', './currency', './array', './path', './object'], factory);
   } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
-    factory(exports, module,require("regenerator").runtime(), require('./extensions'), require('js-object-clone'), require('object-mixin'), require('./generator'), require('./random'), require('./string'), require('./date'), require('./network'), require('./color'), require('./url'), require('./currency'), require('./array'), require('./path'), require('./object'));
+    factory(exports, module, require('./assign'), require('./extensions'), require('js-object-clone'), require('object-mixin'), require('./generator'), require('./random'), require('./string'), require('./date'), require('./network'), require('./color'), require('./url'), require('./currency'), require('./array'), require('./path'), require('./object'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod.exports, mod, global.__tmp9z.extensions, global.objectClone, global.objectMixin, global.__tmp9z.generator, global.__tmp9z.random,
+    factory(mod.exports, mod,global.assign, global.__tmp9z.extensions, global.objectClone, global.objectMixin, global.__tmp9z.generator, global.__tmp9z.random,
         global.__tmp9z.string, global.__tmp9z.date, global.__tmp9z.network, global.__tmp9z.color, global.__tmp9z.url,
         global.__tmp9z.currency, global.__tmp9z.array, global.__tmp9z.path, global.__tmp9z.object);
 
     global.elliptical=global.elliptical || {};
     global.elliptical.utils = mod.exports;
   }
-})(this, function (exports, module, _extensions, _jsObjectClone, _objectMixin, _generator, _random, _string, _date, _network, _color, _url, _currency, _array, _path, _object) {
+})(this, function (exports, module, _assign, _extensions, _jsObjectClone, _objectMixin, _generator, _random, _string, _date, _network, _color, _url, _currency, _array, _path, _object) {
   'use strict';
 
   function _interopRequire(obj) { return obj && obj.__esModule ? obj['default'] : obj; }
@@ -95,7 +95,7 @@
    * @param src {object}
    * @returns {object}
    */
-  utils.merge = function (target, src) {
+  utils.mixin = function (target, src) {
     return Object.mixin(target, src);
   };
 

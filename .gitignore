@@ -35,5 +35,7 @@ nbproject
 #Node
 node_modules/
 
+ignore/
+
 #Test
 test/

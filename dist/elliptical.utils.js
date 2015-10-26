@@ -661,6 +661,39 @@
   typeof self === "object" ? self : this
 );
 
+
+if (!Object.assign) {
+    Object.defineProperty(Object, 'assign', {
+        enumerable: false,
+        configurable: true,
+        writable: true,
+        value: function(target) {
+            'use strict';
+            if (target === undefined || target === null) {
+                throw new TypeError('Cannot convert first argument to object');
+            }
+
+            var to = Object(target);
+            for (var i = 1; i < arguments.length; i++) {
+                var nextSource = arguments[i];
+                if (nextSource === undefined || nextSource === null) {
+                    continue;
+                }
+                nextSource = Object(nextSource);
+
+                var keysArray = Object.keys(nextSource);
+                for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
+                    var nextKey = keysArray[nextIndex];
+                    var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
+                    if (desc !== undefined && desc.enumerable) {
+                        to[nextKey] = nextSource[nextKey];
+                    }
+                }
+            }
+            return to;
+        }
+    });
+}
 /*
  * $Id: object-clone.js,v 0.41 2013/03/27 18:29:04 dankogai Exp dankogai $
  *
@@ -1374,10 +1407,354 @@
   module.exports = string;
 });
 (function (global, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(['exports', 'module'], factory);
+  } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+    factory(exports, module);
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod.exports, mod);
+    global.__tmp9z=global.__tmp9z || {};
+    global.__tmp9z.date = mod.exports;
+  }
+})(this, function (exports, module) {
+  'use strict';
+
+  var date = {};
+
+  /**
+   * return an object representing current date
+   * @returns {{day: number, month: number, year: number}}
+   */
+  date.currentDateObj = function () {
+    var currentDate = new Date();
+    var day = currentDate.getDate();
+    var month = currentDate.getMonth() + 1;
+    var year = currentDate.getFullYear();
+    return {
+      day: day,
+      month: month,
+      year: year
+    };
+  };
+
+  /**
+   * returns a current date string
+   * @returns {string}
+   */
+  date.current = function () {
+    var obj = undefined.currentDateObj();
+    return obj.month.toString() + '/' + obj.day.toString() + '/' + obj.year.toString();
+  };
+
+  /**
+   * tests if valid date
+   * @param obj {object}
+   * @returns {boolean}
+   */
+  date.isDate = function (obj) {
+    return /Date/.test(Object.prototype.toString.call(obj)) && !isNaN(obj.getTime());
+  };
+
+  /**
+   * tests if year is leap year
+   * @param year {number}
+   * @returns {boolean}
+   */
+  date.isLeapYear = function (year) {
+    return year % 4 === 0 && year % 100 !== 0 || year % 400 === 0;
+  };
+
+  /**
+   * returns days in month for given year
+   * @param year {number}
+   * @param month {number}
+   * @returns {number}
+   */
+  date.getDaysInMonth = function (year, month) {
+    return [31, date.isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+  };
+
+  /**
+   * sets a date to start of day
+   * @param d {date}
+   * @returns {void}
+   */
+  date.setToStartOfDay = function (d) {
+    if (date.isDate(d)) d.setHours(0, 0, 0, 0);
+  };
+
+  /**
+   * compares equality of two dates
+   * @param a {date}
+   * @param b {date}
+   * @returns {boolean}
+   */
+  date.compareDates = function (a, b) {
+    return a.getTime() === b.getTime();
+  };
+
+  module.exports = date;
+});
+(function (global, factory) {
     if (typeof define === 'function' && define.amd) {
-        define(['exports', 'module', './generator'], factory);
+        define(['exports', 'module'], factory);
     } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
-        factory(exports, module, require('./generator'));
+        factory(exports, module);
+    } else {
+        var mod = {
+            exports: {}
+        };
+        factory(mod.exports, mod);
+        global.__tmp9z=global.__tmp9z || {};
+        global.__tmp9z.network = mod.exports;
+    }
+})(this, function (exports, module) {
+    'use strict';
+
+    function isLocalBlock(ip) {
+        var x = ip.split('.'),
+            x1,
+            x2,
+            x3,
+            x4;
+        if (x.length == 4) {
+            x1 = parseInt(x[0], 10);
+            x2 = parseInt(x[1], 10);
+            x3 = parseInt(x[2], 10);
+            x4 = parseInt(x[3], 10);
+
+            return x1 === 10 || x1 === 172 && x2 === 16 || x1 === 192 && x2 === 168;
+        }
+        return false;
+    }
+
+    var network = {};
+
+    /**
+     * tests for window to determine if browser environment
+     * @returns {boolean}
+     */
+    network.isBrowser = function () {
+        return typeof window != 'undefined';
+    };
+
+    /**
+     * tests if string is a valid ipv4 address
+     * @param ip {string}
+     * @returns {boolean}
+     */
+    network.isIPAddress = function (ip) {
+        return /^(\d\d?)|(1\d\d)|(0\d\d)|(2[0-4]\d)|(2[0-5])\.(\d\d?)|(1\d\d)|(0\d\d)|(2[0-4]\d)|(2[0-5])\.(\d\d?)|(1\d\d)|(0\d\d)|(2[0-4]\d)|(2[0-5])$/.test(ip);
+    };
+
+    /**
+     * tests if a host is a valid localhost
+     * @param host
+     * @returns {boolean}
+     */
+    network.isLocalHost = function (host) {
+        host = host.toLowerCase();
+        if (host === 'localhost') {
+            return true;
+        } else if (host.indexOf('127.0.0.1') > -1) {
+            return true;
+        } else {
+            if (network.isIPAddress(host)) {
+                return isLocalBlock(host);
+            } else {
+                return false;
+            }
+        }
+    };
+
+    module.exports = network;
+});
+(function (global, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['exports', 'module'], factory);
+    } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+        factory(exports, module);
+    } else {
+        var mod = {
+            exports: {}
+        };
+        factory(mod.exports, mod);
+        global.__tmp9z=global.__tmp9z || {};
+        global.__tmp9z.color = mod.exports;
+    }
+})(this, function (exports, module) {
+    'use strict';
+
+    var color = {};
+
+    color.rgb2hex = function (rgb) {
+        if (rgb.search('rgb') == -1) {
+            return rgb;
+        } else if (rgb == 'rgba(0, 0, 0, 0)') {
+            return 'transparent';
+        } else {
+            var hex = function (x) {
+                return ('0' + parseInt(x).toString(16)).slice(-2);
+            };
+
+            rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
+
+            return '#' + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+        }
+    };
+
+    module.exports = color;
+});
+(function (global, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(["exports", "module", "./string"], factory);
+    } else if (typeof exports !== "undefined" && typeof module !== "undefined") {
+        factory(exports, module, require("./string"));
+    } else {
+        var mod = {
+            exports: {}
+        };
+        factory(mod.exports, mod, global.__tmp9z.string);
+        global.__tmp9z=global.__tmp9z || {};
+        global.__tmp9z.url = mod.exports;
+    }
+})(this, function (exports, module, _string) {
+    "use strict";
+
+    function _interopRequire(obj) { return obj && obj.__esModule ? obj["default"] : obj; }
+
+    var _string2 = _interopRequire(_string);
+
+    var url = {};
+
+    /**
+     * returns a querystring value for query param in the window.location url
+     * @param query {string}
+     * @returns {string}
+     */
+    url.queryString = function (query) {
+        var hu = window.location.search.substring(1);
+        var gy = hu.split("&");
+        for (i = 0; i < gy.length; i++) {
+            var ft = gy[i].split("=");
+            if (ft[0] == query) {
+                return ft[1];
+            }
+        }
+        return null;
+    };
+
+    /**
+     * returns a querystring object array for the window.location url
+     * @returns {Array}
+     */
+    url.queryStringArray = function () {
+        var arr = [];
+        var hu = window.location.search.substring(1);
+        var gy = hu.split("&");
+        for (i = 0; i < gy.length; i++) {
+            var ft = gy[i].split("=");
+            if (ft[0] == ji) {
+                return ft[1];
+            }
+            var obj = {};
+            obj.prop = ft[0];
+            obj.val = ft[1];
+            arr.push(obj);
+        }
+
+        return arr;
+    };
+
+    /**
+     * @param url {string}
+     * @param index {number}
+     * @returns {string}
+     */
+    url.encodeURISection = function (url, index) {
+        if (_string2.firstChar(url) === "/") {
+            url = _string2.trimFirstChar(url);
+        }
+        var arr = url.split("/");
+        var section = arr[index];
+        section = encodeURIComponent(section);
+        var length = arr.length;
+        var url_ = "";
+        for (var i = 0; i < length; i++) {
+            url_ += i === index ? "/" + section : "/" + arr[i];
+        }
+
+        return url_;
+    };
+
+    module.exports = url;
+});
+(function (global, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['exports', 'module'], factory);
+    } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+        factory(exports, module);
+    } else {
+        var mod = {
+            exports: {}
+        };
+        factory(mod.exports, mod);
+        global.__tmp9z=global.__tmp9z || {};
+        global.__tmp9z.currency = mod.exports;
+    }
+})(this, function (exports, module) {
+    'use strict';
+
+    var currency = {};
+
+    /**
+     *
+     * @param v {string}
+     * @returns {float}
+     */
+    currency.parse = function (v) {
+        if (typeof v === 'string') {
+            v = v.replace('$', '');
+            v = v.replace(/,/g, '');
+            v = parseFloat(v);
+        }
+        return v;
+    };
+
+    /**
+     *
+     * @param val {float}
+     * @returns {float}
+     */
+    currency.format = function (val) {
+        val = parseFloat(value);
+        return val.toFixed(2);
+    };
+
+    /**
+     *
+     * @param v {float}
+     * @param q {number}
+     * @returns {float}
+     */
+    currency.extendedAmount = function (v, q) {
+        if (typeof v === 'string') {
+            v = v.replace('$', '');
+            v = parseFloat(v);
+        }
+        return currency.format(v * q);
+    };
+
+    module.exports = currency;
+});
+(function (global, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(["exports", "module", "./generator"], factory);
+    } else if (typeof exports !== "undefined" && typeof module !== "undefined") {
+        factory(exports, module, require("./generator"));
     } else {
         var mod = {
             exports: {}
@@ -1387,14 +1764,19 @@
         global.__tmp9z.array = mod.exports;
     }
 })(this, function (exports, module, _generator) {
-    'use strict';
+    "use strict";
 
-    function _interopRequire(obj) { return obj && obj.__esModule ? obj['default'] : obj; }
+    function _interopRequire(obj) { return obj && obj.__esModule ? obj["default"] : obj; }
 
     var _generator2 = _interopRequire(_generator);
 
     var array = {};
 
+    /**
+     * tests if array
+     * @param obj {*}
+     * @retuns {boolean}
+     */
     array.isArray = function (obj) {
         return /Array/.test(Object.prototype.toString.call(obj));
     };
@@ -1427,6 +1809,60 @@
     };
 
     /**
+     * merge two arrays
+     * @param a {Array}
+     * @param b {Array}
+     * @returns {Array}
+     */
+    array.merge = function (a, b) {
+        var i = a.length,
+            j = 0;
+
+        if (typeof b.length === "number") {
+            for (var l = b.length; j < l; j++) {
+                a[i++] = b[j];
+            }
+        } else {
+            while (b[j] !== undefined) {
+                a[i++] = b[j++];
+            }
+        }
+
+        a.length = i;
+
+        return a;
+    };
+
+    /**
+     *
+     * @returns {Array}
+     */
+    array.makeArray = function (arr, results) {
+        var ret = results || [];
+
+        if (arr != null) {
+            var type = typeof arr;
+            if (arr.length == null || type === "string" || type === "function" || type === "regexp") {
+                ret.push(arr);
+            } else {
+                array.merge(ret, arr);
+            }
+        }
+
+        return ret;
+    };
+
+    /**
+     * concatenate two arguments
+     * @param arr {Array}
+     * @param args {Array}
+     * @returns {Array}
+     */
+    array.concatArgs = function (arr, args) {
+        return array.makeArray(arr).concat(array.makeArray(args));
+    };
+
+    /**
      * empty an array
      * @param arr {Array}
      */
@@ -1449,7 +1885,7 @@
      * @returns {boolean}
      */
     array.isObjectProperty = function (obj, prop) {
-        return !!array.isArray(obj[prop]);
+        return !!Array.isArray(obj[prop]);
     };
 
     /**
@@ -1461,14 +1897,14 @@
     array.isObjectPropertyByIndex = function (obj, index) {
         try {
             var o = obj[Object.keys(obj)[index]];
-            return !!array.isArray(o);
+            return !!Array.isArray(o);
         } catch (ex) {
             return false;
         }
     };
 
     array.indexById = function (arr, id) {
-        var idProp = arguments[2] === undefined ? 'id' : arguments[2];
+        var idProp = arguments[2] === undefined ? "id" : arguments[2];
 
         if (arr.length && arr.length > 0) {
             var len = arr.length;
@@ -1493,7 +1929,7 @@
      * @returns {Object}
      */
     array.findById = function (arr, id) {
-        var propId = arguments[2] === undefined ? 'id' : arguments[2];
+        var propId = arguments[2] === undefined ? "id" : arguments[2];
 
         return _generator2.find(arr, function (obj) {
             return obj[propId] === id;
@@ -1847,9 +2283,9 @@
     module.exports = path_;
 });
 (function (global, factory) {
-    if (typeof define === "function" && define.amd) {
-        define(["exports"], factory);
-    } else if (typeof exports !== "undefined") {
+    if (typeof define === 'function' && define.amd) {
+        define(['exports'], factory);
+    } else if (typeof exports !== 'undefined') {
         factory(exports);
     } else {
         var mod = {
@@ -1860,9 +2296,35 @@
         global.__tmp9z.object = mod.exports;
     }
 })(this, function (exports) {
-    "use strict";
+    'use strict';
+
+    var _arguments = arguments;
 
     var object = {};
+
+    var spec = {
+        descriptors: false,
+        extensibility: false,
+        enumerator: Object.keys
+    };
+
+    /**
+     * is object
+     * @param obj {*}
+     * @returns {boolean}
+     */
+    object.isObject = function (obj) {
+        return typeof obj === 'object' && obj !== null;
+    };
+
+    /**
+     * is function
+     * @param fn {*}
+     * @returns {boolean}
+     */
+    object.isFunction = function (fn) {
+        return typeof fn === 'function';
+    };
 
     /**
      * returns the value of an object prop by index
@@ -1882,7 +2344,7 @@
      * @returns {Number}
      */
     object.indexById = function (obj, id) {
-        var idProp = arguments[2] === undefined ? "id" : arguments[2];
+        var idProp = arguments[2] === undefined ? 'id' : arguments[2];
 
         var arr = object.propertyByIndex(obj, 0);
         if (arr.length && arr.length > 0) {
@@ -1900,6 +2362,11 @@
         }
     };
 
+    /**
+     * tests if object is empty
+     * @param obj
+     * @returns {boolean}
+     */
     object.isEmpty = function (obj) {
         var hasOwnProperty = Object.prototype.hasOwnProperty;
         if (obj == null) return true;
@@ -1913,4 +2380,303 @@
 
         return true;
     };
+
+    /**
+     * tests if object is a POJO
+     * @param obj {object}
+     * @returns {*}
+     */
+    object.isPlainObject = function (obj) {
+        var _isObject = function _isObject(o) {
+            return object.isObject(o) && Object.prototype.toString.call(o) === '[object Object]';
+        };
+
+        var ctor, prot;
+
+        if (_isObject(obj) === false) return false;
+
+        // if has modified constructor
+        ctor = obj.constructor;
+        if (typeof ctor !== 'function') return false;
+
+        // if has modified prototype
+        prot = ctor.prototype;
+        if (_isObject(prot) === false) return false;
+
+        // if constructor does not have an Object-specific method
+        return prot.hasOwnProperty('isPrototypeOf') !== false;
+    };
+
+    /**
+     *  equality test
+     * @param x {object}
+     * @param y {object}
+     * @returns {*}
+     */
+    object.isEqual = function (x, y) {
+        return Object.equals(x, y, spec);
+    };
+
+    /**
+     * clone object
+     * @param src
+     * @returns {*}
+     */
+    object.clone = function (src) {
+        return Object.clone(src, false, spec);
+    };
+
+    /**
+     * deep clone
+     * @param src
+     * @returns {*}
+     */
+    object.deepClone = function (src) {
+        return Object.clone(src, true, spec);
+    };
+
+    /**
+     * returns modified target
+     * @param target {object}
+     * @param source {object}
+     * @returns {*}
+     */
+    object.mixin = function (target, source) {
+        return Object.mixin(target, source);
+    };
+
+    /**
+     * returns modified target
+     * @param target {object}
+     * @param sources {object}
+     * @returns {*}
+     */
+    object.assign = function (target) {
+        for (var _len = arguments.length, sources = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            sources[_key - 1] = arguments[_key];
+        }
+
+        return Object.assign.apply(Object, [target].concat(sources));
+    };
+
+    /**
+     * @params {boolean} -optional deep
+     * @params {object} target
+     * @params {object} source
+     * @returns {*|{}}
+     */
+    object.extend = function () {
+        // copy reference to target object
+        var target = _arguments[0] || {},
+            i = 1,
+            length = _arguments.length,
+            deep = false,
+            options,
+            name,
+            src,
+            copy;
+
+        // Handle a deep copy situation
+        if (typeof target === 'boolean') {
+            deep = target;
+            target = _arguments[1] || {};
+            // skip the boolean and the target
+            i = 2;
+        }
+
+        // Handle case when target is a string or something (possible in deep copy)
+        if (typeof target !== 'object' && ! typeof target === 'function') {
+            target = {};
+        }
+
+        for (; i < length; i++) {
+            // Only deal with non-null/undefined values
+            if ((options = _arguments[i]) !== null) {
+                // Extend the base object
+                for (name in options) {
+                    src = target[name];
+                    copy = options[name];
+
+                    // Prevent never-ending loop
+                    if (target === copy) {
+                        continue;
+                    }
+
+                    // Recurse if we're merging object literal values or arrays
+                    if (deep && copy && (object.isPlainObject(copy) || Array.isArray(copy))) {
+                        var clone = src && (object.isPlainObject(src) || Array.isArray(src)) ? src : Array.isArray(copy) ? [] : {};
+
+                        // Never move original objects, clone them
+                        target[name] = object.extend(deep, clone, copy);
+
+                        // Don't bring in undefined values
+                    } else if (typeof copy !== 'undefined') {
+                        target[name] = copy;
+                    }
+                }
+            }
+        }
+
+        // Return the modified object
+        return target;
+    };
+});
+
+(function (global, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(['exports', 'module', './assign', './extensions', 'js-object-clone', 'object-mixin', './generator', './random', './string', './date', './network', './color', './url', './currency', './array', './path', './object'], factory);
+  } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+    factory(exports, module, require('./assign'), require('./extensions'), require('js-object-clone'), require('object-mixin'), require('./generator'), require('./random'), require('./string'), require('./date'), require('./network'), require('./color'), require('./url'), require('./currency'), require('./array'), require('./path'), require('./object'));
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod.exports, mod,global.assign, global.__tmp9z.extensions, global.objectClone, global.objectMixin, global.__tmp9z.generator, global.__tmp9z.random,
+        global.__tmp9z.string, global.__tmp9z.date, global.__tmp9z.network, global.__tmp9z.color, global.__tmp9z.url,
+        global.__tmp9z.currency, global.__tmp9z.array, global.__tmp9z.path, global.__tmp9z.object);
+
+    global.elliptical=global.elliptical || {};
+    global.elliptical.utils = mod.exports;
+  }
+})(this, function (exports, module, _assign, _extensions, _jsObjectClone, _objectMixin, _generator, _random, _string, _date, _network, _color, _url, _currency, _array, _path, _object) {
+  'use strict';
+
+  function _interopRequire(obj) { return obj && obj.__esModule ? obj['default'] : obj; }
+
+  var _generator2 = _interopRequire(_generator);
+
+  var _random2 = _interopRequire(_random);
+
+  var _string2 = _interopRequire(_string);
+
+  var _date2 = _interopRequire(_date);
+
+  var _network2 = _interopRequire(_network);
+
+  var _color2 = _interopRequire(_color);
+
+  var _url2 = _interopRequire(_url);
+
+  var _currency2 = _interopRequire(_currency);
+
+  var _array2 = _interopRequire(_array);
+
+  var _path2 = _interopRequire(_path);
+
+  var _object2 = _interopRequire(_object);
+
+  var utils = {};
+
+  var spec = {
+    descriptors: false,
+    extensibility: false,
+    enumerator: Object.keys
+  };
+
+  /**
+   * deep clones an object
+   * @param src {object}
+   * @param deep {boolean}
+   * @returns {object}
+   */
+  utils.clone = function (src) {
+    var deep = arguments[1] === undefined ? true : arguments[1];
+    return Object.clone(src, deep, spec);
+  };
+
+  /**
+   * object 'is' comparison
+   * @param x {object}
+   * @param y {object}
+   * @returns {boolean}
+   */
+  utils.is = function (x, y) {
+    return Object.is(x, y);
+  };
+
+  /** compares equality of two objects
+   * @param x {object}
+   * @param y {object}
+   * @returns {boolean}
+   */
+  utils.isEqual = function (x, y) {
+    return Object.equals(x, y, spec);
+  };
+
+  /**
+   * shallow extend of src onto target
+   * @param target {Object}
+   * @param src {Object}
+   * @returns {Object}
+   */
+  utils.assign = function (target, src) {
+    return Object.assign(target, src);
+  };
+
+  /**
+   * deep extend of src onto target
+   * @param target {object}
+   * @param src {object}
+   * @returns {object}
+   */
+  utils.mixin = function (target, src) {
+    return Object.mixin(target, src);
+  };
+
+  /**
+   * lazy find from an iterable collection using es6 generators
+   * @param iterable {collection}
+   * @param predicate {function}
+   * @yields {object}
+   */
+  utils.find = _generator2.find;
+
+  /**
+   * lazy select the first <number> of items to return from an iterable collection
+   * @param iterable {collection}
+   * @param number {int}
+   * @yields {object}
+   */
+  utils.top = _generator2.top;
+
+  /**
+   * tests if value is a number
+   * @param val {object}
+   * @returns {boolean}
+   */
+  utils.isNumeric = function (val) {
+    return !isNaN(parseFloat(val)) && isFinite(val);
+  };
+
+  //random functions namespace
+  utils.random = _random2;
+
+  //string functions namespace
+  utils.string = _string2;
+
+  //date functions namespace
+  utils.date = _date2;
+
+  //network functions namespace
+  utils.network = _network2;
+
+  //color function namespace
+  utils.color = _color2;
+
+  //currency function namespace
+  utils.currency = _currency2;
+
+  //url functions namespace
+  utils.url = _url2;
+
+  //array functions namespace
+  utils.array = _array2;
+
+  //path functions namespace
+  utils.path = _path2;
+
+  //object functions namespace
+  utils.object = _object2;
+
+  module.exports = utils;
 });
