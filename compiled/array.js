@@ -118,6 +118,10 @@
         return arr.splice(0, arr.length);
     };
 
+    array.clone = function (arr) {
+        return arr.slice(0);
+    };
+
     /**
      * tests if valid val for an array index
      * @param val {number}
