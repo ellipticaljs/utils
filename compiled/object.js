@@ -7,7 +7,7 @@
         var mod = {
             exports: {}
         };
-        factory(mod.exports);
+        factory(mod.exports,mod);
         global.__tmp9z=global.__tmp9z || {};
         global.__tmp9z.object = mod.exports;
     }
