@@ -2288,9 +2288,9 @@ if (!Object.assign) {
 });
 (function (global, factory) {
     if (typeof define === 'function' && define.amd) {
-        define(['exports'], factory);
-    } else if (typeof exports !== 'undefined') {
-        factory(exports);
+        define(['exports', 'module'], factory);
+    } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+        factory(exports, module);
     } else {
         var mod = {
             exports: {}
@@ -2299,7 +2299,7 @@ if (!Object.assign) {
         global.__tmp9z=global.__tmp9z || {};
         global.__tmp9z.object = mod.exports;
     }
-})(this, function (exports) {
+})(this, function (exports, module) {
     'use strict';
 
     var _arguments = arguments;
@@ -2524,6 +2524,8 @@ if (!Object.assign) {
         // Return the modified object
         return target;
     };
+
+    module.exports = object;
 });
 
 (function (global, factory) {
