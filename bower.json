@@ -1,7 +1,7 @@
 {
   "name": "elliptical-utils",
   "description": "es6 javascript utilities lib",
-  "main": "index.js",
+  "main": "dist/elliptical.utils.js",
   "authors": [
     "S. Francis"
   ],
