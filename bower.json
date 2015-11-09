@@ -1,0 +1,24 @@
+{
+  "name": "elliptical-utils",
+  "description": "es6 javascript utilities lib",
+  "main": "index.js",
+  "authors": [
+    "S. Francis"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "es6",
+    "javascript",
+    "utilities",
+    "library"
+  ],
+  "homepage": "https://github.com/tachyon1337/elliptical-utils",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
