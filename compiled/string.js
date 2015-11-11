@@ -163,6 +163,10 @@
     });
   };
 
+  string.toTitleCase = function (s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+
   /**
    * converts a space delimited string to a dash delimited string
    *
@@ -171,6 +175,12 @@
    */
   string.spaceToDash = function (s) {
     return s.replace(/\s+/g, '-').toLowerCase();
+  };
+
+  string.camelCaseToSpacedTitleCase = function (s) {
+    var rex = /([A-Z])([A-Z])([a-z])|([a-z])([A-Z])/g;
+    var ret = s.replace(rex, '$1$4 $2$3$5');
+    return undefined.toTitleCase(ret);
   };
 
   module.exports = string;
