@@ -2474,7 +2474,7 @@ if (!Object.assign) {
         return Object.assign.apply(Object, [target].concat(sources));
     };
 
-  
+
     module.exports = object;
 });
 
