@@ -1,7 +1,7 @@
 {
   "name": "elliptical-utils",
   "description": "es6 javascript utilities lib",
-  "version":"2.0.3",
+  "version":"2.0.4",
   "main": "dist/elliptical.utils.js",
   "authors": [
     "S. Francis"
@@ -20,6 +20,14 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "compiled",
+    "lib",
+    ".gitignore",
+    ".npmignore",
+    "build.json",
+    "gulpfile.js",
+    "package.json",
+    "index.js"
   ]
 }
