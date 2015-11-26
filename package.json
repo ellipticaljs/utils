@@ -1,17 +1,18 @@
 {
   "name": "elliptical-utils",
   "description": "es6 javascript utilities lib",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "author": "S. Francis",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tachyon1337/elliptical-utils.git"
+    "url": "https://github.com/ellipticaljs/utils.git"
   },
   "dependencies": {
     "js-object-clone": "git+https://github.com/dankogai/js-object-clone.git",
     "object-mixin": "git+https://github.com/tachyon1337/object-mixin.git",
-    "regenerator": "^0.8.41"
+    "regenerator": "^0.8.41",
+    "es6-collections":"git+https://github.com/WebReflection/es6-collections.git"
   },
   "devDependencies": {
     "gulp": "^3.6.0",

@@ -1,7 +1,7 @@
 var gulp=require('gulp'),
     concat=require('gulp-concat'),
     uglify = require('gulp-uglify'),
-    BUILD_JSON=require('./build/dist.json'),
+    BUILD_JSON=require('./build.json'),
     BUILD_NAME='elliptical.utils.js',
     MIN_NAME='elliptical.utils.min.js',
     REPO_NAME='elliptical utils',

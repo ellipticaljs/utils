@@ -1,7 +1,7 @@
 {
   "name": "elliptical-utils",
   "description": "es6 javascript utilities lib",
-  "version":"2.0.2",
+  "version":"2.0.3",
   "main": "dist/elliptical.utils.js",
   "authors": [
     "S. Francis"
@@ -13,7 +13,7 @@
     "utilities",
     "library"
   ],
-  "homepage": "https://github.com/tachyon1337/elliptical-utils",
+  "homepage": "https://github.com/ellipticaljs/utils",
   "moduleType": [],
   "ignore": [
     "**/.*",
