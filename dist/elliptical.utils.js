@@ -2285,7 +2285,7 @@ if (!Object.assign) {
     path_.objectProperty = function (obj, path) {
         try {
             var _ret = (function () {
-                var pathArray = path.split(path);
+                var pathArray = path.split('.');
                 var a = obj;
                 pathArray.forEach(function (p) {
                     var b = a[p];
