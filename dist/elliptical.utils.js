@@ -1970,7 +1970,7 @@ if (!Object.assign) {
      * @returns {float}
      */
     currency.format = function (val) {
-        val = parseFloat(value);
+        val = parseFloat(val);
         return val.toFixed(2);
     };
 
