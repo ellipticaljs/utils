@@ -1,5 +1,4 @@
 [
-
     "./node_modules/regenerator/runtime.js",
     "./lib/assign.js",
     "./node_modules/js-object-clone/object-clone.js",
@@ -17,5 +16,6 @@
     "./compiled/array.js",
     "./compiled/path.js",
     "./compiled/object.js",
+    "./compiled/native.js",
     "./compiled/utils.js"
 ]

@@ -37,7 +37,7 @@
    * @returns {string}
    */
   date.current = function () {
-    var obj = undefined.currentDateObj();
+    var obj = this.currentDateObj();
     return obj.month.toString() + '/' + obj.day.toString() + '/' + obj.year.toString();
   };
 

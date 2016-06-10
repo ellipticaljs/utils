@@ -1,3 +1,3 @@
 
 
-module.exports=require('./dist/elliptical.utils');
+module.exports=require('./lib/utils');
