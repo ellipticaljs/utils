@@ -2174,10 +2174,16 @@ if (!Object.assign) {
    */
   array.findById = function (arr, id) {
     var propId = arguments[2] === undefined ? "id" : arguments[2];
-
-    return _generator2.find(arr, function (obj) {
-      return obj[propId] === id;
-    });
+    var length=arr.length;
+    var result=null;
+    for(var i=0;i<length;i++){
+      if(arr[i].id===id){
+        result=arr[i];
+        break;
+      }
+    }
+    
+    return result;
   };
 
   module.exports = array;
