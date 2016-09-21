@@ -1878,7 +1878,7 @@ if (!Object.assign) {
   url.queryString = function (query) {
     var hu = window.location.search.substring(1);
     var gy = hu.split("&");
-    for (i = 0; i < gy.length; i++) {
+    for (var i = 0; i < gy.length; i++) {
       var ft = gy[i].split("=");
       if (ft[0] == query) {
         return ft[1];
@@ -1895,7 +1895,7 @@ if (!Object.assign) {
     var arr = [];
     var hu = window.location.search.substring(1);
     var gy = hu.split("&");
-    for (i = 0; i < gy.length; i++) {
+    for (var i = 0; i < gy.length; i++) {
       var ft = gy[i].split("=");
       if (ft[0] == ji) {
         return ft[1];
@@ -2185,6 +2185,27 @@ if (!Object.assign) {
     
     return result;
   };
+
+  /**
+   *  sort array compareFunction
+   * @param field {String}
+   * @param reverse {Boolean}
+   * @param primer {Function}
+   * @returns {Array}
+   */
+  array.sort=function(field,reverse,primer){
+    var key = primer ?
+      function(x) {return primer(x[field])} :
+      function(x) {return x[field]};
+
+    reverse = !reverse ? 1 : -1;
+
+    return function (a, b) {
+      return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+    }
+  };
+  
+  
 
   module.exports = array;
 });
